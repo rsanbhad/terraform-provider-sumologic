@@ -16,27 +16,27 @@ import (
 	"fmt"
 )
 
-func (s *Client) CreateFieldExtractionRule(fieldExtractionRule FieldExtractionRule) (string, error) {
-	data, err := s.Post("v1/extractionRules", fieldExtractionRule)
+func (s *Client) CreateMonitor(Monitor Monitor) (string, error) {
+	data, err := s.Post("v1/extractionRules", Monitor)
 	if err != nil {
 		return "", err
 	}
 
-	var createdfieldExtractionRule FieldExtractionRule
-	err = json.Unmarshal(data, &createdfieldExtractionRule)
+	var createdMonitor Monitor
+	err = json.Unmarshal(data, &createdMonitor)
 	if err != nil {
 		return "", err
 	}
 
-	return createdfieldExtractionRule.ID, nil
+	return createdMonitor.ID, nil
 }
 
-func (s *Client) DeleteFieldExtractionRule(id string) error {
+func (s *Client) DeleteMonitor(id string) error {
 	_, err := s.Delete(fmt.Sprintf("v1/extractionRules/%s", id))
 	return err
 }
 
-func (s *Client) GetFieldExtractionRule(id string) (*FieldExtractionRule, error) {
+func (s *Client) GetMonitor(id string) (*Monitor, error) {
 	data, _, err := s.Get(fmt.Sprintf("v1/extractionRules/%s", id))
 	if err != nil {
 		return nil, err
@@ -45,25 +45,25 @@ func (s *Client) GetFieldExtractionRule(id string) (*FieldExtractionRule, error)
 		return nil, nil
 	}
 
-	var fieldExtractionRule FieldExtractionRule
-	err = json.Unmarshal(data, &fieldExtractionRule)
+	var Monitor Monitor
+	err = json.Unmarshal(data, &Monitor)
 	if err != nil {
 		return nil, err
 	}
-	return &fieldExtractionRule, nil
+	return &Monitor, nil
 }
 
-func (s *Client) UpdateFieldExtractionRule(fieldExtractionRule FieldExtractionRule) error {
-	url := fmt.Sprintf("v1/extractionRules/%s", fieldExtractionRule.ID)
+func (s *Client) UpdateMonitor(Monitor Monitor) error {
+	url := fmt.Sprintf("v1/extractionRules/%s", Monitor.ID)
 
-	fieldExtractionRule.ID = ""
+	Monitor.ID = ""
 
-	_, err := s.Put(url, fieldExtractionRule)
+	_, err := s.Put(url, Monitor)
 	return err
 }
 
 // models
-type FieldExtractionRule struct {
+type Monitor struct {
 	ID string `json:"id,omitempty"`
 	// Name of the field extraction rule. Use a name that makes it easy to identify the rule.
 	Name string `json:"name"`

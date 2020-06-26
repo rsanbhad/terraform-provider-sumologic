@@ -21,20 +21,20 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
-func TestAccSumologicFieldExtractionRule_basic(t *testing.T) {
-	var fieldextractionrule FieldExtractionRule
-	testName := FieldsMap["FieldExtractionRule"]["name"]
-	testScope := FieldsMap["FieldExtractionRule"]["scope"]
-	testParseExpression := FieldsMap["FieldExtractionRule"]["parseExpression"]
-	testEnabled, _ := strconv.ParseBool(FieldsMap["FieldExtractionRule"]["enabled"])
+func TestAccSumologicMonitor_basic(t *testing.T) {
+	var monitor Monitor
+	testName := FieldsMap["Monitor"]["name"]
+	testScope := FieldsMap["Monitor"]["scope"]
+	testParseExpression := FieldsMap["Monitor"]["parseExpression"]
+	testEnabled, _ := strconv.ParseBool(FieldsMap["Monitor"]["enabled"])
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckFieldExtractionRuleDestroy(fieldextractionrule),
+		CheckDestroy: testAccCheckMonitorDestroy(monitor),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckSumologicFieldExtractionRuleConfigImported(testName, testScope, testParseExpression, testEnabled),
+				Config: testAccCheckSumologicMonitorConfigImported(testName, testScope, testParseExpression, testEnabled),
 			},
 			{
 				ResourceName:      "sumologic_field_extraction_rule.foo",
@@ -45,22 +45,22 @@ func TestAccSumologicFieldExtractionRule_basic(t *testing.T) {
 	})
 }
 
-func TestAccFieldExtractionRule_create(t *testing.T) {
-	var fieldextractionrule FieldExtractionRule
-	testName := FieldsMap["FieldExtractionRule"]["name"]
-	testScope := FieldsMap["FieldExtractionRule"]["scope"]
-	testParseExpression := FieldsMap["FieldExtractionRule"]["parseExpression"]
-	testEnabled, _ := strconv.ParseBool(FieldsMap["FieldExtractionRule"]["enabled"])
+func TestAccMonitor_create(t *testing.T) {
+	var monitor Monitor
+	testName := FieldsMap["Monitor"]["name"]
+	testScope := FieldsMap["Monitor"]["scope"]
+	testParseExpression := FieldsMap["Monitor"]["parseExpression"]
+	testEnabled, _ := strconv.ParseBool(FieldsMap["Monitor"]["enabled"])
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckFieldExtractionRuleDestroy(fieldextractionrule),
+		CheckDestroy: testAccCheckMonitorDestroy(monitor),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccSumologicFieldExtractionRule(testName, testScope, testParseExpression, testEnabled),
+				Config: testAccSumologicMonitor(testName, testScope, testParseExpression, testEnabled),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckFieldExtractionRuleExists("sumologic_field_extraction_rule.test", &fieldextractionrule, t),
-					testAccCheckFieldExtractionRuleAttributes("sumologic_field_extraction_rule.test"),
+					testAccCheckMonitorExists("sumologic_field_extraction_rule.test", &monitor, t),
+					testAccCheckMonitorAttributes("sumologic_field_extraction_rule.test"),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "name", testName),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "scope", testScope),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "parse_expression", testParseExpression),
@@ -71,69 +71,69 @@ func TestAccFieldExtractionRule_create(t *testing.T) {
 	})
 }
 
-func testAccCheckFieldExtractionRuleDestroy(fieldextractionrule FieldExtractionRule) resource.TestCheckFunc {
+func testAccCheckMonitorDestroy(monitor Monitor) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		client := testAccProvider.Meta().(*Client)
 		for _, r := range s.RootModule().Resources {
 			id := r.Primary.ID
-			u, err := client.GetFieldExtractionRule(id)
+			u, err := client.GetMonitor(id)
 			if err != nil {
 				return fmt.Errorf("Encountered an error: " + err.Error())
 			}
 			if u != nil {
-				return fmt.Errorf("FieldExtractionRule still exists")
+				return fmt.Errorf("Monitor still exists")
 			}
 		}
 		return nil
 	}
 }
 
-func testAccCheckFieldExtractionRuleExists(name string, fieldextractionrule *FieldExtractionRule, t *testing.T) resource.TestCheckFunc {
+func testAccCheckMonitorExists(name string, monitor *Monitor, t *testing.T) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 		if !ok {
 			//need this so that we don't get an unused import error for strconv in some cases
-			return fmt.Errorf("Error = %s. FieldExtractionRule not found: %s", strconv.FormatBool(ok), name)
+			return fmt.Errorf("Error = %s. Monitor not found: %s", strconv.FormatBool(ok), name)
 		}
 
 		//need this so that we don't get an unused import error for strings in some cases
 		if strings.EqualFold(rs.Primary.ID, "") {
-			return fmt.Errorf("FieldExtractionRule ID is not set")
+			return fmt.Errorf("Monitor ID is not set")
 		}
 
 		id := rs.Primary.ID
 		c := testAccProvider.Meta().(*Client)
-		newFieldExtractionRule, err := c.GetFieldExtractionRule(id)
+		newMonitor, err := c.GetMonitor(id)
 		if err != nil {
-			return fmt.Errorf("FieldExtractionRule %s not found", id)
+			return fmt.Errorf("Monitor %s not found", id)
 		}
-		fieldextractionrule = newFieldExtractionRule
+		monitor = newMonitor
 		return nil
 	}
 }
 
-func TestAccFieldExtractionRule_update(t *testing.T) {
-	var fieldextractionrule FieldExtractionRule
-	testName := FieldsMap["FieldExtractionRule"]["name"]
-	testScope := FieldsMap["FieldExtractionRule"]["scope"]
-	testParseExpression := FieldsMap["FieldExtractionRule"]["parseExpression"]
-	testEnabled, _ := strconv.ParseBool(FieldsMap["FieldExtractionRule"]["enabled"])
+func TestAccMonitor_update(t *testing.T) {
+	var monitor Monitor
+	testName := FieldsMap["Monitor"]["name"]
+	testScope := FieldsMap["Monitor"]["scope"]
+	testParseExpression := FieldsMap["Monitor"]["parseExpression"]
+	testEnabled, _ := strconv.ParseBool(FieldsMap["Monitor"]["enabled"])
 
-	testUpdatedName := FieldsMap["FieldExtractionRule"]["updatedName"]
-	testUpdatedScope := FieldsMap["FieldExtractionRule"]["updatedScope"]
-	testUpdatedParseExpression := FieldsMap["FieldExtractionRule"]["updatedParseExpression"]
-	testUpdatedEnabled, _ := strconv.ParseBool(FieldsMap["FieldExtractionRule"]["updatedEnabled"])
+	testUpdatedName := FieldsMap["Monitor"]["updatedName"]
+	testUpdatedScope := FieldsMap["Monitor"]["updatedScope"]
+	testUpdatedParseExpression := FieldsMap["Monitor"]["updatedParseExpression"]
+	testUpdatedEnabled, _ := strconv.ParseBool(FieldsMap["Monitor"]["updatedEnabled"])
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckFieldExtractionRuleDestroy(fieldextractionrule),
+		CheckDestroy: testAccCheckMonitorDestroy(monitor),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccSumologicFieldExtractionRule(testName, testScope, testParseExpression, testEnabled),
+				Config: testAccSumologicMonitor(testName, testScope, testParseExpression, testEnabled),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckFieldExtractionRuleExists("sumologic_field_extraction_rule.test", &fieldextractionrule, t),
-					testAccCheckFieldExtractionRuleAttributes("sumologic_field_extraction_rule.test"),
+					testAccCheckMonitorExists("sumologic_field_extraction_rule.test", &monitor, t),
+					testAccCheckMonitorAttributes("sumologic_field_extraction_rule.test"),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "name", testName),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "scope", testScope),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "parse_expression", testParseExpression),
@@ -141,10 +141,10 @@ func TestAccFieldExtractionRule_update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccSumologicFieldExtractionRuleUpdate(testUpdatedName, testUpdatedScope, testUpdatedParseExpression, testUpdatedEnabled),
+				Config: testAccSumologicMonitorUpdate(testUpdatedName, testUpdatedScope, testUpdatedParseExpression, testUpdatedEnabled),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckFieldExtractionRuleExists("sumologic_field_extraction_rule.test", &fieldextractionrule, t),
-					testAccCheckFieldExtractionRuleAttributes("sumologic_field_extraction_rule.test"),
+					testAccCheckMonitorExists("sumologic_field_extraction_rule.test", &monitor, t),
+					testAccCheckMonitorAttributes("sumologic_field_extraction_rule.test"),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "name", testUpdatedName),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "scope", testUpdatedScope),
 					resource.TestCheckResourceAttr("sumologic_field_extraction_rule.test", "parse_expression", testUpdatedParseExpression),
@@ -155,7 +155,7 @@ func TestAccFieldExtractionRule_update(t *testing.T) {
 	})
 }
 
-func testAccCheckSumologicFieldExtractionRuleConfigImported(name string, scope string, parseExpression string, enabled bool) string {
+func testAccCheckSumologicMonitorConfigImported(name string, scope string, parseExpression string, enabled bool) string {
 	return fmt.Sprintf(`
 resource "sumologic_field_extraction_rule" "foo" {
       name = "%s"
@@ -166,7 +166,7 @@ resource "sumologic_field_extraction_rule" "foo" {
 `, name, scope, parseExpression, enabled)
 }
 
-func testAccSumologicFieldExtractionRule(name string, scope string, parseExpression string, enabled bool) string {
+func testAccSumologicMonitor(name string, scope string, parseExpression string, enabled bool) string {
 	return fmt.Sprintf(`
 resource "sumologic_field_extraction_rule" "test" {
     name = "%s"
@@ -177,7 +177,7 @@ resource "sumologic_field_extraction_rule" "test" {
 `, name, scope, parseExpression, enabled)
 }
 
-func testAccSumologicFieldExtractionRuleUpdate(name string, scope string, parseExpression string, enabled bool) string {
+func testAccSumologicMonitorUpdate(name string, scope string, parseExpression string, enabled bool) string {
 	return fmt.Sprintf(`
 resource "sumologic_field_extraction_rule" "test" {
       name = "%s"
@@ -188,7 +188,7 @@ resource "sumologic_field_extraction_rule" "test" {
 `, name, scope, parseExpression, enabled)
 }
 
-func testAccCheckFieldExtractionRuleAttributes(name string) resource.TestCheckFunc {
+func testAccCheckMonitorAttributes(name string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		f := resource.ComposeTestCheckFunc(
 			resource.TestCheckResourceAttrSet(name, "name"),

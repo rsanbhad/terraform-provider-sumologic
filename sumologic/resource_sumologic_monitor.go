@@ -17,12 +17,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func resourceSumologicFieldExtractionRule() *schema.Resource {
+func resourceSumologicMonitor() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceSumologicFieldExtractionRuleCreate,
-		Read:   resourceSumologicFieldExtractionRuleRead,
-		Update: resourceSumologicFieldExtractionRuleUpdate,
-		Delete: resourceSumologicFieldExtractionRuleDelete,
+		Create: resourceSumologicMonitorCreate,
+		Read:   resourceSumologicMonitorRead,
+		Update: resourceSumologicMonitorUpdate,
+		Delete: resourceSumologicMonitorDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -52,41 +52,41 @@ func resourceSumologicFieldExtractionRule() *schema.Resource {
 	}
 }
 
-func resourceSumologicFieldExtractionRuleRead(d *schema.ResourceData, meta interface{}) error {
+func resourceSumologicMonitorRead(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
 	id := d.Id()
-	fieldextractionrule, err := c.GetFieldExtractionRule(id)
+	monitor, err := c.GetMonitor(id)
 
 	if err != nil {
 		return err
 	}
 
-	if fieldextractionrule == nil {
-		log.Printf("[WARN] FieldExtractionRule not found, removing from state: %v - %v", id, err)
+	if monitor == nil {
+		log.Printf("[WARN] Monitor not found, removing from state: %v - %v", id, err)
 		d.SetId("")
 		return nil
 	}
 
-	d.Set("name", fieldextractionrule.Name)
-	d.Set("scope", fieldextractionrule.Scope)
-	d.Set("parse_expression", fieldextractionrule.ParseExpression)
-	d.Set("enabled", fieldextractionrule.Enabled)
+	d.Set("name", monitor.Name)
+	d.Set("scope", monitor.Scope)
+	d.Set("parse_expression", monitor.ParseExpression)
+	d.Set("enabled", monitor.Enabled)
 
 	return nil
 }
 
-func resourceSumologicFieldExtractionRuleDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceSumologicMonitorDelete(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
-	return c.DeleteFieldExtractionRule(d.Id())
+	return c.DeleteMonitor(d.Id())
 }
 
-func resourceSumologicFieldExtractionRuleCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceSumologicMonitorCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
 	if d.Id() == "" {
-		fieldextractionrule := resourceToFieldExtractionRule(d)
-		id, err := c.CreateFieldExtractionRule(fieldextractionrule)
+		monitor := resourceToMonitor(d)
+		id, err := c.CreateMonitor(monitor)
 
 		if err != nil {
 			return err
@@ -95,26 +95,26 @@ func resourceSumologicFieldExtractionRuleCreate(d *schema.ResourceData, meta int
 		d.SetId(id)
 	}
 
-	return resourceSumologicFieldExtractionRuleRead(d, meta)
+	return resourceSumologicMonitorRead(d, meta)
 }
 
-func resourceSumologicFieldExtractionRuleUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceSumologicMonitorUpdate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
-	fieldextractionrule := resourceToFieldExtractionRule(d)
+	monitor := resourceToMonitor(d)
 
-	err := c.UpdateFieldExtractionRule(fieldextractionrule)
+	err := c.UpdateMonitor(monitor)
 
 	if err != nil {
 		return err
 	}
 
-	return resourceSumologicFieldExtractionRuleRead(d, meta)
+	return resourceSumologicMonitorRead(d, meta)
 }
 
-func resourceToFieldExtractionRule(d *schema.ResourceData) FieldExtractionRule {
+func resourceToMonitor(d *schema.ResourceData) Monitor {
 
-	return FieldExtractionRule{
+	return Monitor{
 		ID:              d.Id(),
 		Name:            d.Get("name").(string),
 		Scope:           d.Get("scope").(string),
