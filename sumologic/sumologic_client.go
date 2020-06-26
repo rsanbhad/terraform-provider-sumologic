@@ -25,6 +25,9 @@ type Client struct {
 }
 
 var endpoints = map[string]string{
+	// internal deployments - for internal testing
+	"nite": "https://nite-api.sumologic.net/api/",
+	// prods
 	"us1": "https://api.sumologic.com/api/",
 	"us2": "https://api.us2.sumologic.com/api/",
 	"eu":  "https://api.eu.sumologic.com/api/",
