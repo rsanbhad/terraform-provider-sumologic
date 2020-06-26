@@ -17,6 +17,27 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
+type Monitor struct {
+	ID            int    `json:"id,omitempty"`
+	Name          string `json:"name"`
+	Type          string `json:"type"`
+	Description   string `json:"description,omitempty"`
+	Version       string `json:"version,omitempty"`
+	CreatedAt     string `json: "createdAt"`
+	CreatedBy     string `json: "createdBy"`
+	ModifiedAt    string `json: "modifiedAt"`
+	ModifiedBy    string `json: "modifiedBy"`
+	ParentID      string `json: "parentId"`
+	ContentType   string `json: "contentType"`
+	IsLocked      string `json: "isLocked"`
+	IsSystem      string `json: "isSystem"`
+	IsMutable     string `json: "isMutable"`
+	MonitorType   string `json: "monitorType"`
+	Notifications string `json: "notifications"`
+	Queries       string `json: "queries"`
+	Triggers      string `json: "triggers"`
+}
+
 func resourceSumologicMonitor() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceSumologicMonitorCreate,
@@ -33,19 +54,82 @@ func resourceSumologicMonitor() *schema.Resource {
 				Required: true,
 				ForceNew: false,
 			},
-			"scope": {
+			"description": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"version": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"createdAt": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"modifiedAt": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"createdBy": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"modifiedBy": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"parentId": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: false,
+				Default:  "0000000000000002",
 			},
-			"parse_expression": {
+			"contentType": {
 				Type:     schema.TypeString,
-				Required: true,
+				Required: false,
+				ForceNew: false,
+				Default:  "Monitor",
+			},
+			"isLocked": {
+				Type:     schema.TypeString,
+				Required: false,
 				ForceNew: false,
 			},
-			"enabled": {
-				Type:     schema.TypeBool,
-				Required: true,
+			"isSystem": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"isMutable": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"monitorType": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+				Default:  "Metrics",
+			},
+			"notifications": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"queries": {
+				Type:     schema.TypeString,
+				Required: false,
+				ForceNew: false,
+			},
+			"triggers": {
+				Type:     schema.TypeString,
+				Required: false,
 				ForceNew: false,
 			},
 		},
@@ -69,9 +153,22 @@ func resourceSumologicMonitorRead(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.Set("name", monitor.Name)
-	d.Set("scope", monitor.Scope)
-	d.Set("parse_expression", monitor.ParseExpression)
-	d.Set("enabled", monitor.Enabled)
+	d.Set("type", monitor.Type)
+	d.Set("description", monitor.Description)
+	d.Set("version", monitor.Version)
+	d.Set("createdAt", monitor.CreatedAt)
+	d.Set("createdBy", monitor.CreatedBy)
+	d.Set("modifiedAt", monitor.ModifiedAt)
+	d.Set("modifiedBy", monitor.ModifiedBy)
+	d.Set("parentId", monitor.ParentID)
+	d.Set("contentType", monitor.ContentType)
+	d.Set("isLocked", monitor.IsLocked)
+	d.Set("isSystem", monitor.IsSystem)
+	d.Set("isMutable", monitor.IsMutable)
+	d.Set("monitorType", monitor.MonitorType)
+	d.Set("notifications", monitor.Notifications)
+	d.Set("queries", monitor.Queries)
+	d.Set("triggers", monitor.Triggers)
 
 	return nil
 }
@@ -115,10 +212,23 @@ func resourceSumologicMonitorUpdate(d *schema.ResourceData, meta interface{}) er
 func resourceToMonitor(d *schema.ResourceData) Monitor {
 
 	return Monitor{
-		ID:              d.Id(),
-		Name:            d.Get("name").(string),
-		Scope:           d.Get("scope").(string),
-		ParseExpression: d.Get("parse_expression").(string),
-		Enabled:         d.Get("enabled").(bool),
+		ID:            d.Id(),
+		Name:          d.Get("name").(string),
+		Type:          d.Get("type").(string),
+		Description:   d.Get("description").(string),
+		Version:       d.Get("version").(string),
+		CreatedAt:     d.Get("createdAt").(string),
+		CreatedBy:     d.Get("createdBy").(string),
+		ModifiedAt:    d.Get("modifiedAt").(string),
+		ModifiedBy:    d.Get("modifiedBy").(string),
+		ParentID:      d.Get("parentId").(string),
+		ContentType:   d.Get("contentType").(string),
+		IsLocked:      d.Get("isLocked").(string),
+		IsSystem:      d.Get("isSystem").(string),
+		IsMutable:     d.Get("isMutable").(string),
+		MonitorType:   d.Get("monitorType").(string),
+		Notifications: d.Get("notifications").(string),
+		Queries:       d.Get("queries").(string),
+		Triggers:      d.Get("triggers").(string),
 	}
 }

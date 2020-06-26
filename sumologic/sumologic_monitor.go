@@ -17,7 +17,7 @@ import (
 )
 
 func (s *Client) CreateMonitor(Monitor Monitor) (string, error) {
-	data, err := s.Post("v1/extractionRules", Monitor)
+	data, err := s.Post("v1/monitors", Monitor)
 	if err != nil {
 		return "", err
 	}
@@ -32,12 +32,12 @@ func (s *Client) CreateMonitor(Monitor Monitor) (string, error) {
 }
 
 func (s *Client) DeleteMonitor(id string) error {
-	_, err := s.Delete(fmt.Sprintf("v1/extractionRules/%s", id))
+	_, err := s.Delete(fmt.Sprintf("v1/monitors/%s", id))
 	return err
 }
 
 func (s *Client) GetMonitor(id string) (*Monitor, error) {
-	data, _, err := s.Get(fmt.Sprintf("v1/extractionRules/%s", id))
+	data, _, err := s.Get(fmt.Sprintf("v1/monitors/%s", id))
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (s *Client) GetMonitor(id string) (*Monitor, error) {
 }
 
 func (s *Client) UpdateMonitor(Monitor Monitor) error {
-	url := fmt.Sprintf("v1/extractionRules/%s", Monitor.ID)
+	url := fmt.Sprintf("v1/monitors/%s", Monitor.ID)
 
 	Monitor.ID = ""
 
