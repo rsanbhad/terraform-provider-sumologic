@@ -16,6 +16,7 @@ import (
 	"fmt"
 )
 
+// CreateMonitor creates a new monitor
 func (s *Client) CreateMonitor(Monitor Monitor) (string, error) {
 	data, err := s.Post("v1/monitors", Monitor)
 	if err != nil {
@@ -31,11 +32,13 @@ func (s *Client) CreateMonitor(Monitor Monitor) (string, error) {
 	return createdMonitor.ID, nil
 }
 
+// DeleteMonitor deletes a monitor by id
 func (s *Client) DeleteMonitor(id string) error {
 	_, err := s.Delete(fmt.Sprintf("v1/monitors/%s", id))
 	return err
 }
 
+// GetMonitor gets a monitor by id
 func (s *Client) GetMonitor(id string) (*Monitor, error) {
 	data, _, err := s.Get(fmt.Sprintf("v1/monitors/%s", id))
 	if err != nil {
@@ -53,6 +56,7 @@ func (s *Client) GetMonitor(id string) (*Monitor, error) {
 	return &Monitor, nil
 }
 
+// UpdateMonitor updates an existing monitor (the monitor with the same id)
 func (s *Client) UpdateMonitor(Monitor Monitor) error {
 	url := fmt.Sprintf("v1/monitors/%s", Monitor.ID)
 
@@ -62,15 +66,38 @@ func (s *Client) UpdateMonitor(Monitor Monitor) error {
 	return err
 }
 
-// models
+// Monitor model
 type Monitor struct {
-	ID string `json:"id,omitempty"`
-	// Name of the field extraction rule. Use a name that makes it easy to identify the rule.
-	Name string `json:"name"`
-	// Scope of the field extraction rule. This could be a sourceCategory, sourceHost, or any other metadata that describes the data you want to extract from. Think of the Scope as the first portion of an ad hoc search, before the first pipe ( | ). You'll use the Scope to run a search against the rule.
-	Scope string `json:"scope"`
-	// Describes the fields to be parsed.
-	ParseExpression string `json:"parseExpression"`
-	// Is the field extraction rule enabled.
-	Enabled bool `json:"enabled"`
+	ID            string `json:"id,omitempty"`
+	Name          string `json:"name"`
+	Type          string `json:"type"`
+	Description   string `json:"description,omitempty"`
+	Version       string `json:"version,omitempty"`
+	CreatedAt     string `json: "createdAt"`
+	CreatedBy     string `json: "createdBy"`
+	ModifiedAt    string `json: "modifiedAt"`
+	ModifiedBy    string `json: "modifiedBy"`
+	ParentID      string `json: "parentId"`
+	ContentType   string `json: "contentType"`
+	IsLocked      string `json: "isLocked"`
+	IsSystem      string `json: "isSystem"`
+	IsMutable     string `json: "isMutable"`
+	MonitorType   string `json: "monitorType"`
+	Notifications string `json: "notifications"`
+	Queries       string `json: "queries"`
+	Triggers      string `json: "triggers"`
 }
+
+// MonitorQuery model
+type MonitorQuery struct {
+	RowID        string `json:"id"`
+	Query        string `json:"query"`
+	IsTriggerRow string `json:"isTriggerRow"`
+}
+
+// MonitorNotification model
+type MonitorNotification struct {
+	Query string `json:"query"`
+}
+
+// MonitorTriggerCondition model
