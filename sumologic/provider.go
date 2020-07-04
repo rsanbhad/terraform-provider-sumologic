@@ -62,7 +62,7 @@ func Provider() terraform.ResourceProvider {
 
 			"sumologic_partition": resourceSumologicPartition(),
 
-			"sumologic_extraction_rule": resourceSumologicExtractionRule(),
+			"sumologic_extraction_rule": resourceSumologicFieldExtractionRule(),
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{

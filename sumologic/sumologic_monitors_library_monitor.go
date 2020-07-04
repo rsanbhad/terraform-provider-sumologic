@@ -112,4 +112,40 @@ type MonitorsLibraryMonitor struct {
 	Triggers      []string `json:"triggers,omitempty"`
 }
 
+// Monitor model
+// type Monitor struct {
+// 	ID            string `json:"id,omitempty"`
+// 	Name          string `json:"name"`
+// 	Type          string `json:"type"`
+// 	Description   string `json:"description,omitempty"`
+// 	Version       string `json:"version,omitempty"`
+// 	CreatedAt     string `json: "createdAt"`
+// 	CreatedBy     string `json: "createdBy"`
+// 	ModifiedAt    string `json: "modifiedAt"`
+// 	ModifiedBy    string `json: "modifiedBy"`
+// 	ParentID      string `json: "parentId"`
+// 	ContentType   string `json: "contentType"`
+// 	IsLocked      string `json: "isLocked"`
+// 	IsSystem      string `json: "isSystem"`
+// 	IsMutable     string `json: "isMutable"`
+// 	MonitorType   string `json: "monitorType"`
+// 	Notifications string `json: "notifications"`
+// 	Queries       string `json: "queries"`
+// 	Triggers      string `json: "triggers"`
+// }
+
+// MonitorQuery model
+// type MonitorQuery struct {
+// 	RowID        string `json:"id"`
+// 	Query        string `json:"query"`
+// 	IsTriggerRow string `json:"isTriggerRow"`
+// }
+
+// MonitorNotification model
+// type MonitorNotification struct {
+// 	Query string `json:"query"`
+// }
+
+// MonitorTriggerCondition model
+
 // ---------- END ----------
