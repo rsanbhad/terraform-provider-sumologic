@@ -12,69 +12,55 @@
 package sumologic
 
 import (
-  "log"
-  "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-  
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"log"
 )
 
 func resourceSumologicPartition() *schema.Resource {
-    return &schema.Resource{
-      Create: resourceSumologicPartitionCreate,
-      Read: resourceSumologicPartitionRead,
-      Update: resourceSumologicPartitionUpdate,
-      Delete: resourceSumologicPartitionDelete,
-      Importer: &schema.ResourceImporter{
-        State: schema.ImportStatePassthrough,
-      },
+	return &schema.Resource{
+		Create: resourceSumologicPartitionCreate,
+		Read:   resourceSumologicPartitionRead,
+		Update: resourceSumologicPartitionUpdate,
+		Delete: resourceSumologicPartitionDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
-       Schema: map[string]*schema.Schema{
-        "is_compliant": {
-           Type: schema.TypeBool,
-          Optional: true,
-           ForceNew: false,
-Default: false,
-           
-           
-         },
-         "routing_expression": {
-           Type: schema.TypeString,
-          Required: true,
-           ForceNew: false,
-           
-           
-         },
-         "retention_period": {
-           Type: schema.TypeInt,
-          Optional: true,
-           ForceNew: false,
-Default: -1,
-           
-           
-         },
-         "name": {
-           Type: schema.TypeString,
-          Optional: true,
-           ForceNew: false,
-           
-           
-         },
-         "analytics_tier": {
-           Type: schema.TypeString,
-          Optional: true,
-           ForceNew: false,
-Default: "enhanced",
-           
-           
-         },
-        
-    },
-  }
+		Schema: map[string]*schema.Schema{
+			"is_compliant": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: false,
+				Default:  false,
+			},
+			"routing_expression": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: false,
+			},
+			"retention_period": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				ForceNew: false,
+				Default:  -1,
+			},
+			"name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+			},
+			"analytics_tier": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+				Default:  "enhanced",
+			},
+		},
+	}
 }
 
 func resourceSumologicPartitionCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
-
-  
 
 	if d.Id() == "" {
 		partition := resourceToPartition(d)
@@ -93,8 +79,6 @@ func resourceSumologicPartitionCreate(d *schema.ResourceData, meta interface{}) 
 func resourceSumologicPartitionRead(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
-  
-
 	id := d.Id()
 	partition, err := c.GetPartition(id)
 
@@ -109,18 +93,16 @@ func resourceSumologicPartitionRead(d *schema.ResourceData, meta interface{}) er
 	}
 
 	d.Set("routing_expression", partition.RoutingExpression)
-    d.Set("is_compliant", partition.IsCompliant)
-    d.Set("analytics_tier", partition.AnalyticsTier)
-    d.Set("name", partition.Name)
-    d.Set("retention_period", partition.RetentionPeriod)
+	d.Set("is_compliant", partition.IsCompliant)
+	d.Set("analytics_tier", partition.AnalyticsTier)
+	d.Set("name", partition.Name)
+	d.Set("retention_period", partition.RetentionPeriod)
 
 	return nil
 }
 
 func resourceSumologicPartitionUpdate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
-
-  
 
 	partition := resourceToPartition(d)
 
@@ -133,14 +115,13 @@ func resourceSumologicPartitionUpdate(d *schema.ResourceData, meta interface{}) 
 	return resourceSumologicPartitionRead(d, meta)
 }
 func resourceToPartition(d *schema.ResourceData) Partition {
-   
-   
-   return Partition{
-    Name: d.Get("name").(string),
-    ID: d.Id(),
-    RetentionPeriod: d.Get("retention_period").(int),
-    IsCompliant: d.Get("is_compliant").(bool),
-    AnalyticsTier: d.Get("analytics_tier").(string),
-    RoutingExpression: d.Get("routing_expression").(string),
-   }
- }
+
+	return Partition{
+		Name:              d.Get("name").(string),
+		ID:                d.Id(),
+		RetentionPeriod:   d.Get("retention_period").(int),
+		IsCompliant:       d.Get("is_compliant").(bool),
+		AnalyticsTier:     d.Get("analytics_tier").(string),
+		RoutingExpression: d.Get("routing_expression").(string),
+	}
+}

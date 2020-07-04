@@ -13,104 +13,82 @@
 package sumologic
 
 import (
-  "encoding/json"
-  "fmt"
+	"encoding/json"
+	"fmt"
 )
 
-// ---------- ENDPOINTS ---------- 
-
+// ---------- ENDPOINTS ----------
 
 func (s *Client) CreatePartition(partition Partition) (string, error) {
-    urlWithoutParams := "v1/partitions"
-    
-    
-    
-    
-  data, err := s.Post(urlWithoutParams, partition)
-  if err != nil {
+	urlWithoutParams := "v1/partitions"
+
+	data, err := s.Post(urlWithoutParams, partition)
+	if err != nil {
 		return "", err
 	}
 
-    var createdPartition Partition
+	var createdPartition Partition
 
-    
-    err = json.Unmarshal(data, &createdPartition)
-    if err != nil {
-        return "", err
-    }
+	err = json.Unmarshal(data, &createdPartition)
+	if err != nil {
+		return "", err
+	}
 
-    return createdPartition.ID, nil
+	return createdPartition.ID, nil
 }
 
-
 func (s *Client) GetPartition(id string) (*Partition, error) {
-    urlWithoutParams := "v1/partitions/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, id)
+	urlWithoutParams := "v1/partitions/%s"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, id)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
-
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-  data, _, err := s.Get(urlWithParams)
-  if err != nil {
+	data, _, err := s.Get(urlWithParams)
+	if err != nil {
 		return nil, err
 	}
 	if data == nil {
 		return nil, nil
 	}
 
-    var partition Partition
+	var partition Partition
 
-    
-    err = json.Unmarshal(data, &partition)
+	err = json.Unmarshal(data, &partition)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    return &partition, nil
+	return &partition, nil
 }
-
 
 func (s *Client) UpdatePartition(partition Partition) error {
-    urlWithoutParams := "v1/partitions/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, partition.ID)
+	urlWithoutParams := "v1/partitions/%s"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, partition.ID)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
+	partition.ID = ""
+	partition.RoutingExpression = ""
+	partition.AnalyticsTier = ""
+	partition.Name = ""
 
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-    
-    
-    partition.ID = ""
-    partition.RoutingExpression = ""
-    partition.AnalyticsTier = ""
-    partition.Name = ""
-
-    _, err := s.Put(urlWithParams, partition)
-    return err
+	_, err := s.Put(urlWithParams, partition)
+	return err
 }
-
 
 // ---------- TYPES ----------
 type Partition struct {
-    ID string `json:"id,omitempty"`
-    RoutingExpression string `json:"routingExpression"`
-    Name string `json:"name"`
-    RetentionPeriod int `json:"retentionPeriod"`
-    IsCompliant bool `json:"isCompliant"`
-    AnalyticsTier string `json:"analyticsTier"`
+	ID                string `json:"id,omitempty"`
+	RoutingExpression string `json:"routingExpression"`
+	Name              string `json:"name"`
+	RetentionPeriod   int    `json:"retentionPeriod"`
+	IsCompliant       bool   `json:"isCompliant"`
+	AnalyticsTier     string `json:"analyticsTier"`
 }
-
 
 // ---------- END ----------

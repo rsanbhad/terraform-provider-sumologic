@@ -1,4 +1,3 @@
-// ---------- BEGIN ExtractionRule ----------
 // ----------------------------------------------------------------------------
 //
 //     ***     AUTO GENERATED CODE    ***    AUTO GENERATED CODE     ***
@@ -9,119 +8,69 @@
 //     changes will be clobbered when the file is regenerated. Do not submit
 //     changes to this file.
 //
-// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------\
 package sumologic
 
 import (
-  "encoding/json"
-  "fmt"
+	"encoding/json"
+	"fmt"
 )
 
-// ---------- ENDPOINTS ---------- 
-
-
-func (s *Client) CreateExtractionRule(extractionRule ExtractionRule) (string, error) {
-    urlWithoutParams := "v1/extractionRules"
-    
-    
-    
-    
-  data, err := s.Post(urlWithoutParams, extractionRule)
-  if err != nil {
+func (s *Client) CreateFieldExtractionRule(fieldExtractionRule FieldExtractionRule) (string, error) {
+	data, err := s.Post("v1/extractionRules", fieldExtractionRule)
+	if err != nil {
 		return "", err
 	}
 
-    var createdExtractionRule ExtractionRule
+	var createdfieldExtractionRule FieldExtractionRule
+	err = json.Unmarshal(data, &createdfieldExtractionRule)
+	if err != nil {
+		return "", err
+	}
 
-    
-    err = json.Unmarshal(data, &createdExtractionRule)
-    if err != nil {
-        return "", err
-    }
-
-    return createdExtractionRule.ID, nil
+	return createdfieldExtractionRule.ID, nil
 }
 
+func (s *Client) DeleteFieldExtractionRule(id string) error {
+	_, err := s.Delete(fmt.Sprintf("v1/extractionRules/%s", id))
+	return err
+}
 
-func (s *Client) GetExtractionRule(id string) (*ExtractionRule, error) {
-    urlWithoutParams := "v1/extractionRules/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, id)
-
-
-
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-  data, _, err := s.Get(urlWithParams)
-  if err != nil {
+func (s *Client) GetFieldExtractionRule(id string) (*FieldExtractionRule, error) {
+	data, _, err := s.Get(fmt.Sprintf("v1/extractionRules/%s", id))
+	if err != nil {
 		return nil, err
 	}
 	if data == nil {
 		return nil, nil
 	}
 
-    var extractionRule ExtractionRule
-
-    
-    err = json.Unmarshal(data, &extractionRule)
-
-    if err != nil {
-        return nil, err
-    }
-
-    return &extractionRule, nil
+	var fieldExtractionRule FieldExtractionRule
+	err = json.Unmarshal(data, &fieldExtractionRule)
+	if err != nil {
+		return nil, err
+	}
+	return &fieldExtractionRule, nil
 }
 
+func (s *Client) UpdateFieldExtractionRule(fieldExtractionRule FieldExtractionRule) error {
+	url := fmt.Sprintf("v1/extractionRules/%s", fieldExtractionRule.ID)
 
-func (s *Client) DeleteExtractionRule(id string) error {
-    urlWithoutParams := "v1/extractionRules/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, id)
+	fieldExtractionRule.ID = ""
 
-
-
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    _, err := s.Delete(urlWithParams)
-    
-    return err
+	_, err := s.Put(url, fieldExtractionRule)
+	return err
 }
 
-
-func (s *Client) UpdateExtractionRule(extractionRule ExtractionRule) error {
-    urlWithoutParams := "v1/extractionRules/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, extractionRule.ID)
-
-
-
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-    
-    
-    extractionRule.ID = ""
-    
-
-    _, err := s.Put(urlWithParams, extractionRule)
-    return err
+// models
+type FieldExtractionRule struct {
+	ID string `json:"id,omitempty"`
+	// Name of the field extraction rule. Use a name that makes it easy to identify the rule.
+	Name string `json:"name"`
+	// Scope of the field extraction rule. This could be a sourceCategory, sourceHost, or any other metadata that describes the data you want to extract from. Think of the Scope as the first portion of an ad hoc search, before the first pipe ( | ). You'll use the Scope to run a search against the rule.
+	Scope string `json:"scope"`
+	// Describes the fields to be parsed.
+	ParseExpression string `json:"parseExpression"`
+	// Is the field extraction rule enabled.
+	Enabled bool `json:"enabled"`
 }
-
-
-// ---------- TYPES ----------
-type ExtractionRule struct {
-    ID string `json:"id,omitempty"`
-}
-
-
-// ---------- END ----------

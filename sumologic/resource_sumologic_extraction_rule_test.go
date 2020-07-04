@@ -13,15 +13,15 @@ package sumologic
 
 import (
 	"fmt"
-	"testing"
-  "strconv"
-  "strings"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"strconv"
+	"strings"
+	"testing"
 )
+
 func TestAccSumologicExtractionRule_basic(t *testing.T) {
 	var extractionRule ExtractionRule
-	
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -40,38 +40,37 @@ func TestAccSumologicExtractionRule_basic(t *testing.T) {
 	})
 }
 func TestAccExtractionRule_create(t *testing.T) {
-  var extractionRule ExtractionRule
-  
-  resource.Test(t, resource.TestCase{
-    PreCheck: func() { testAccPreCheck(t) },
-    Providers:    testAccProviders,
-    CheckDestroy: testAccCheckExtractionRuleDestroy(extractionRule),
-    Steps: []resource.TestStep{
-      {
-        Config: testAccSumologicExtractionRule(),
-        Check: resource.ComposeTestCheckFunc(
-          testAccCheckExtractionRuleExists("sumologic_extraction_rule.test", &extractionRule, t),
-          testAccCheckExtractionRuleAttributes("sumologic_extraction_rule.test"),
-          
-        ),
-      },
-    },
-  })
+	var extractionRule ExtractionRule
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckExtractionRuleDestroy(extractionRule),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccSumologicExtractionRule(),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckExtractionRuleExists("sumologic_extraction_rule.test", &extractionRule, t),
+					testAccCheckExtractionRuleAttributes("sumologic_extraction_rule.test"),
+				),
+			},
+		},
+	})
 }
 
 func testAccCheckExtractionRuleDestroy(extractionRule ExtractionRule) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		client := testAccProvider.Meta().(*Client)
-    for _, r := range s.RootModule().Resources {
-      id := r.Primary.ID
-		  u, err := client.GetExtractionRule(id)
-		  if err != nil {
-        return fmt.Errorf("Encountered an error: " + err.Error())
-		  }
-      if u != nil {
-        return fmt.Errorf("ExtractionRule still exists")
-      }
-    }
+		for _, r := range s.RootModule().Resources {
+			id := r.Primary.ID
+			u, err := client.GetExtractionRule(id)
+			if err != nil {
+				return fmt.Errorf("Encountered an error: " + err.Error())
+			}
+			if u != nil {
+				return fmt.Errorf("ExtractionRule still exists")
+			}
+		}
 		return nil
 	}
 }
@@ -79,11 +78,11 @@ func testAccCheckExtractionRuleExists(name string, extractionRule *ExtractionRul
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 		if !ok {
-      //need this so that we don't get an unused import error for strconv in some cases
+			//need this so that we don't get an unused import error for strconv in some cases
 			return fmt.Errorf("Error = %s. ExtractionRule not found: %s", strconv.FormatBool(ok), name)
 		}
 
-    //need this so that we don't get an unused import error for strings in some cases
+		//need this so that we don't get an unused import error for strings in some cases
 		if strings.EqualFold(rs.Primary.ID, "") {
 			return fmt.Errorf("ExtractionRule ID is not set")
 		}
@@ -100,13 +99,10 @@ func testAccCheckExtractionRuleExists(name string, extractionRule *ExtractionRul
 }
 
 func TestAccExtractionRule_update(t *testing.T) {
-  var extractionRule ExtractionRule
-  
-
-  
+	var extractionRule ExtractionRule
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckExtractionRuleDestroy(extractionRule),
 		Steps: []resource.TestStep{
@@ -115,14 +111,11 @@ func TestAccExtractionRule_update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckExtractionRuleExists("sumologic_extraction_rule.test", &extractionRule, t),
 					testAccCheckExtractionRuleAttributes("sumologic_extraction_rule.test"),
-          
 				),
 			},
 			{
 				Config: testAccSumologicExtractionRuleUpdate(),
-				Check: resource.ComposeTestCheckFunc(
-					
-				),
+				Check:  resource.ComposeTestCheckFunc(),
 			},
 		},
 	})
@@ -132,7 +125,7 @@ func testAccCheckSumologicExtractionRuleConfigImported() string {
 resource "sumologic_extraction_rule" "foo" {
       
 }
-`, )
+`)
 }
 
 func testAccSumologicExtractionRule() string {
@@ -140,7 +133,7 @@ func testAccSumologicExtractionRule() string {
 resource "sumologic_extraction_rule" "test" {
     
 }
-`, )
+`)
 }
 
 func testAccSumologicExtractionRuleUpdate() string {
@@ -148,14 +141,12 @@ func testAccSumologicExtractionRuleUpdate() string {
 resource "sumologic_extraction_rule" "test" {
       
 }
-`, )
+`)
 }
 
 func testAccCheckExtractionRuleAttributes(name string) resource.TestCheckFunc {
-  return func(s *terraform.State) error {
-      f := resource.ComposeTestCheckFunc(
-        
-      )
-      return f(s)
-   }
+	return func(s *terraform.State) error {
+		f := resource.ComposeTestCheckFunc()
+		return f(s)
+	}
 }

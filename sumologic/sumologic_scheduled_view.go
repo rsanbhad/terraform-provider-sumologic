@@ -13,123 +13,96 @@
 package sumologic
 
 import (
-  "encoding/json"
-  "fmt"
+	"encoding/json"
+	"fmt"
 )
 
-// ---------- ENDPOINTS ---------- 
-
+// ---------- ENDPOINTS ----------
 
 func (s *Client) GetScheduledView(id string) (*ScheduledView, error) {
-    urlWithoutParams := "v1/scheduledViews/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, id)
+	urlWithoutParams := "v1/scheduledViews/%s"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, id)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
-
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-  data, _, err := s.Get(urlWithParams)
-  if err != nil {
+	data, _, err := s.Get(urlWithParams)
+	if err != nil {
 		return nil, err
 	}
 	if data == nil {
 		return nil, nil
 	}
 
-    var scheduledView ScheduledView
+	var scheduledView ScheduledView
 
-    
-    err = json.Unmarshal(data, &scheduledView)
+	err = json.Unmarshal(data, &scheduledView)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    return &scheduledView, nil
+	return &scheduledView, nil
 }
-
 
 func (s *Client) UpdateScheduledView(scheduledView ScheduledView) error {
-    urlWithoutParams := "v1/scheduledViews/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, scheduledView.ID)
+	urlWithoutParams := "v1/scheduledViews/%s"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, scheduledView.ID)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
+	scheduledView.ID = ""
+	scheduledView.ParsingMode = ""
+	scheduledView.Query = ""
+	scheduledView.IndexName = ""
+	scheduledView.StartTime = ""
 
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-    
-    
-    scheduledView.ID = ""
-    scheduledView.ParsingMode = ""
-    scheduledView.Query = ""
-    scheduledView.IndexName = ""
-    scheduledView.StartTime = ""
-
-    _, err := s.Put(urlWithParams, scheduledView)
-    return err
+	_, err := s.Put(urlWithParams, scheduledView)
+	return err
 }
 
-
 func (s *Client) CreateScheduledView(scheduledView ScheduledView) (string, error) {
-    urlWithoutParams := "v1/scheduledViews"
-    
-    
-    
-    
-  data, err := s.Post(urlWithoutParams, scheduledView)
-  if err != nil {
+	urlWithoutParams := "v1/scheduledViews"
+
+	data, err := s.Post(urlWithoutParams, scheduledView)
+	if err != nil {
 		return "", err
 	}
 
-    var createdScheduledView ScheduledView
+	var createdScheduledView ScheduledView
 
-    
-    err = json.Unmarshal(data, &createdScheduledView)
-    if err != nil {
-        return "", err
-    }
+	err = json.Unmarshal(data, &createdScheduledView)
+	if err != nil {
+		return "", err
+	}
 
-    return createdScheduledView.ID, nil
+	return createdScheduledView.ID, nil
 }
-
 
 func (s *Client) DeleteScheduledView(id string) error {
-    urlWithoutParams := "v1/scheduledViews/%s/disable"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, id)
+	urlWithoutParams := "v1/scheduledViews/%s/disable"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, id)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
+	_, err := s.Delete(urlWithParams)
 
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    _, err := s.Delete(urlWithParams)
-    
-    return err
+	return err
 }
-
 
 // ---------- TYPES ----------
 type ScheduledView struct {
-    ID string `json:"id,omitempty"`
-    Query string `json:"query"`
-    IndexName string `json:"indexName"`
-    StartTime string `json:"startTime"`
-    ParsingMode string `json:"parsingMode"`
-    RetentionPeriod int `json:"retentionPeriod"`
+	ID              string `json:"id,omitempty"`
+	Query           string `json:"query"`
+	IndexName       string `json:"indexName"`
+	StartTime       string `json:"startTime"`
+	ParsingMode     string `json:"parsingMode"`
+	RetentionPeriod int    `json:"retentionPeriod"`
 }
-
 
 // ---------- END ----------

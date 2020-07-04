@@ -13,19 +13,20 @@ package sumologic
 
 import (
 	"fmt"
-	"testing"
-  "strconv"
-  "strings"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"strconv"
+	"strings"
+	"testing"
 )
+
 func TestAccSumologicPartition_basic(t *testing.T) {
 	var partition Partition
 	testRoutingExpression := "_sourcecategory=*/Apache"
-  testIsCompliant := false
-  testAnalyticsTier := "enhanced"
-  testName := "apachejBVRdWJxHa"
-  testRetentionPeriod := 365
+	testIsCompliant := false
+	testAnalyticsTier := "enhanced"
+	testName := "apachejBVRdWJxHa"
+	testRetentionPeriod := 365
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -44,46 +45,46 @@ func TestAccSumologicPartition_basic(t *testing.T) {
 	})
 }
 func TestAccPartition_create(t *testing.T) {
-  var partition Partition
-  testRoutingExpression := "_sourcecategory=*/Apache"
-  testIsCompliant := false
-  testAnalyticsTier := "enhanced"
-  testName := "apacheTpwXq9OeLj"
-  testRetentionPeriod := 365
-  resource.Test(t, resource.TestCase{
-    PreCheck: func() { testAccPreCheck(t) },
-    Providers:    testAccProviders,
-    CheckDestroy: testAccCheckPartitionDestroy(partition),
-    Steps: []resource.TestStep{
-      {
-        Config: testAccSumologicPartition(testRoutingExpression, testIsCompliant, testAnalyticsTier, testName, testRetentionPeriod),
-        Check: resource.ComposeTestCheckFunc(
-          testAccCheckPartitionExists("sumologic_partition.test", &partition, t),
-          testAccCheckPartitionAttributes("sumologic_partition.test"),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "routing_expression", testRoutingExpression),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "is_compliant", strconv.FormatBool(testIsCompliant)),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "analytics_tier", testAnalyticsTier),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "name", testName),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
-        ),
-      },
-    },
-  })
+	var partition Partition
+	testRoutingExpression := "_sourcecategory=*/Apache"
+	testIsCompliant := false
+	testAnalyticsTier := "enhanced"
+	testName := "apacheTpwXq9OeLj"
+	testRetentionPeriod := 365
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPartitionDestroy(partition),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccSumologicPartition(testRoutingExpression, testIsCompliant, testAnalyticsTier, testName, testRetentionPeriod),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckPartitionExists("sumologic_partition.test", &partition, t),
+					testAccCheckPartitionAttributes("sumologic_partition.test"),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "routing_expression", testRoutingExpression),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "is_compliant", strconv.FormatBool(testIsCompliant)),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "analytics_tier", testAnalyticsTier),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "name", testName),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
+				),
+			},
+		},
+	})
 }
 
 func testAccCheckPartitionDestroy(partition Partition) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		client := testAccProvider.Meta().(*Client)
-    for _, r := range s.RootModule().Resources {
-      id := r.Primary.ID
-		  u, err := client.GetPartition(id)
-		  if err != nil {
-        return fmt.Errorf("Encountered an error: " + err.Error())
-		  }
-      if u != nil {
-        return fmt.Errorf("Partition still exists")
-      }
-    }
+		for _, r := range s.RootModule().Resources {
+			id := r.Primary.ID
+			u, err := client.GetPartition(id)
+			if err != nil {
+				return fmt.Errorf("Encountered an error: " + err.Error())
+			}
+			if u != nil {
+				return fmt.Errorf("Partition still exists")
+			}
+		}
 		return nil
 	}
 }
@@ -91,11 +92,11 @@ func testAccCheckPartitionExists(name string, partition *Partition, t *testing.T
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 		if !ok {
-      //need this so that we don't get an unused import error for strconv in some cases
+			//need this so that we don't get an unused import error for strconv in some cases
 			return fmt.Errorf("Error = %s. Partition not found: %s", strconv.FormatBool(ok), name)
 		}
 
-    //need this so that we don't get an unused import error for strings in some cases
+		//need this so that we don't get an unused import error for strings in some cases
 		if strings.EqualFold(rs.Primary.ID, "") {
 			return fmt.Errorf("Partition ID is not set")
 		}
@@ -112,21 +113,21 @@ func testAccCheckPartitionExists(name string, partition *Partition, t *testing.T
 }
 
 func TestAccPartition_update(t *testing.T) {
-  var partition Partition
-  testRoutingExpression := "_sourcecategory=*/Apache"
-  testIsCompliant := false
-  testAnalyticsTier := "enhanced"
-  testName := "apacheTmxhctjCn6"
-  testRetentionPeriod := 365
+	var partition Partition
+	testRoutingExpression := "_sourcecategory=*/Apache"
+	testIsCompliant := false
+	testAnalyticsTier := "enhanced"
+	testName := "apacheTmxhctjCn6"
+	testRetentionPeriod := 365
 
-  testUpdatedRoutingExpression := "_sourcecategory=*/Apache"
-  testUpdatedIsCompliant := false
-  testUpdatedAnalyticsTier := "enhanced"
-    testUpdatedName := "apacheTmxhctjCn6"
-  testUpdatedRetentionPeriod := 366
+	testUpdatedRoutingExpression := "_sourcecategory=*/Apache"
+	testUpdatedIsCompliant := false
+	testUpdatedAnalyticsTier := "enhanced"
+	testUpdatedName := "apacheTmxhctjCn6"
+	testUpdatedRetentionPeriod := 366
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPartitionDestroy(partition),
 		Steps: []resource.TestStep{
@@ -135,21 +136,21 @@ func TestAccPartition_update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPartitionExists("sumologic_partition.test", &partition, t),
 					testAccCheckPartitionAttributes("sumologic_partition.test"),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "routing_expression", testRoutingExpression),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "is_compliant", strconv.FormatBool(testIsCompliant)),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "analytics_tier", testAnalyticsTier),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "name", testName),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "routing_expression", testRoutingExpression),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "is_compliant", strconv.FormatBool(testIsCompliant)),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "analytics_tier", testAnalyticsTier),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "name", testName),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
 				),
 			},
 			{
 				Config: testAccSumologicPartitionUpdate(testUpdatedRoutingExpression, testUpdatedIsCompliant, testUpdatedAnalyticsTier, testUpdatedName, testUpdatedRetentionPeriod),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("sumologic_partition.test", "routing_expression", testUpdatedRoutingExpression),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "is_compliant", strconv.FormatBool(testUpdatedIsCompliant)),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "analytics_tier", testUpdatedAnalyticsTier),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "name", testUpdatedName),
-          resource.TestCheckResourceAttr("sumologic_partition.test", "retention_period", strconv.Itoa(testUpdatedRetentionPeriod)),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "is_compliant", strconv.FormatBool(testUpdatedIsCompliant)),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "analytics_tier", testUpdatedAnalyticsTier),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "name", testUpdatedName),
+					resource.TestCheckResourceAttr("sumologic_partition.test", "retention_period", strconv.Itoa(testUpdatedRetentionPeriod)),
 				),
 			},
 		},
@@ -192,14 +193,14 @@ resource "sumologic_partition" "test" {
 }
 
 func testAccCheckPartitionAttributes(name string) resource.TestCheckFunc {
-  return func(s *terraform.State) error {
-      f := resource.ComposeTestCheckFunc(
-        resource.TestCheckResourceAttrSet(name, "routing_expression"),
-        resource.TestCheckResourceAttrSet(name, "is_compliant"),
-        resource.TestCheckResourceAttrSet(name, "analytics_tier"),
-        resource.TestCheckResourceAttrSet(name, "name"),
-        resource.TestCheckResourceAttrSet(name, "retention_period"),
-      )
-      return f(s)
-   }
+	return func(s *terraform.State) error {
+		f := resource.ComposeTestCheckFunc(
+			resource.TestCheckResourceAttrSet(name, "routing_expression"),
+			resource.TestCheckResourceAttrSet(name, "is_compliant"),
+			resource.TestCheckResourceAttrSet(name, "analytics_tier"),
+			resource.TestCheckResourceAttrSet(name, "name"),
+			resource.TestCheckResourceAttrSet(name, "retention_period"),
+		)
+		return f(s)
+	}
 }

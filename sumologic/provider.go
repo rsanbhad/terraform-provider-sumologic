@@ -37,8 +37,8 @@ func Provider() terraform.ResourceProvider {
 				Default:  os.Getenv("SUMOLOGIC_BASE_URL"),
 			},
 		},
-   
-   ResourcesMap: map[string]*schema.Resource{
+
+		ResourcesMap: map[string]*schema.Resource{
 			"sumologic_collector":                          resourceSumologicCollector(),
 			"sumologic_http_source":                        resourceSumologicHTTPSource(),
 			"sumologic_polling_source":                     resourceSumologicPollingSource(),
@@ -48,25 +48,20 @@ func Provider() terraform.ResourceProvider {
 			"sumologic_collector_ingest_budget_assignment": resourceSumologicCollectorIngestBudgetAssignment(),
 			"sumologic_folder":                             resourceSumologicFolder(),
 			"sumologic_content":                            resourceSumologicContent(),
-     "sumologic_connection":                         resourceSumologicConnection(),
-     
-"sumologic_scheduled_view":            resourceSumologicScheduledView(),
+			"sumologic_connection":                         resourceSumologicConnection(),
 
-     
-"sumologic_monitors_library_monitor":            resourceSumologicMonitorsLibraryMonitor(),
+			"sumologic_scheduled_view": resourceSumologicScheduledView(),
 
-     
-"sumologic_role":            resourceSumologicRole(),
+			"sumologic_monitors_library_monitor": resourceSumologicMonitorsLibraryMonitor(),
 
-     
-"sumologic_partition":            resourceSumologicPartition(),
+			"sumologic_role": resourceSumologicRole(),
 
-     
-"sumologic_extraction_rule":            resourceSumologicExtractionRule(),
+			"sumologic_partition": resourceSumologicPartition(),
 
+			"sumologic_extraction_rule": resourceSumologicFieldExtractionRule(),
 		},
-   
-   DataSourcesMap: map[string]*schema.Resource{
+
+		DataSourcesMap: map[string]*schema.Resource{
 			"sumologic_caller_identity": dataSourceSumologicCallerIdentity(),
 			"sumologic_collector":       dataSourceSumologicCollector(),
 			"sumologic_http_source":     dataSourceSumologicHTTPSource(),

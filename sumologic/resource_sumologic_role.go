@@ -12,61 +12,51 @@
 package sumologic
 
 import (
-  "log"
-  "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-  
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"log"
 )
 
 func resourceSumologicRole() *schema.Resource {
-    return &schema.Resource{
-      Create: resourceSumologicRoleCreate,
-      Read: resourceSumologicRoleRead,
-      Update: resourceSumologicRoleUpdate,
-      Delete: resourceSumologicRoleDelete,
-      Importer: &schema.ResourceImporter{
-        State: schema.ImportStatePassthrough,
-      },
+	return &schema.Resource{
+		Create: resourceSumologicRoleCreate,
+		Read:   resourceSumologicRoleRead,
+		Update: resourceSumologicRoleUpdate,
+		Delete: resourceSumologicRoleDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
-       Schema: map[string]*schema.Schema{
-        "name": {
-           Type: schema.TypeString,
-          Required: true,
-           ForceNew: false,
-           
-           
-         },
-         "description": {
-           Type: schema.TypeString,
-          Optional: true,
-           ForceNew: false,
-           
-           
-         },
-         "capabilities": {
-           Type: schema.TypeList,
-          Optional: true,
-           ForceNew: false,
-           
-           Elem:  &schema.Schema{
-            Type: schema.TypeString,
-           },
-         },
-         "filter_predicate": {
-           Type: schema.TypeString,
-          Optional: true,
-           ForceNew: false,
-           
-           
-         },
-        
-    },
-  }
+		Schema: map[string]*schema.Schema{
+			"name": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: false,
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+			},
+			"capabilities": {
+				Type:     schema.TypeList,
+				Optional: true,
+				ForceNew: false,
+
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"filter_predicate": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+			},
+		},
+	}
 }
 
 func resourceSumologicRoleRead(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
-
-  
 
 	id := d.Id()
 	role, err := c.GetRole(id)
@@ -82,24 +72,20 @@ func resourceSumologicRoleRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.Set("name", role.Name)
-    d.Set("description", role.Description)
-    d.Set("capabilities", role.Capabilities)
-    d.Set("filter_predicate", role.FilterPredicate)
+	d.Set("description", role.Description)
+	d.Set("capabilities", role.Capabilities)
+	d.Set("filter_predicate", role.FilterPredicate)
 
 	return nil
 }
 func resourceSumologicRoleDelete(d *schema.ResourceData, meta interface{}) error {
-  c := meta.(*Client)
+	c := meta.(*Client)
 
-  
-
-  return c.DeleteRole(d.Id())
+	return c.DeleteRole(d.Id())
 }
 
 func resourceSumologicRoleUpdate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
-
-  
 
 	role := resourceToRole(d)
 
@@ -115,8 +101,6 @@ func resourceSumologicRoleUpdate(d *schema.ResourceData, meta interface{}) error
 func resourceSumologicRoleCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
-  
-
 	if d.Id() == "" {
 		role := resourceToRole(d)
 		id, err := c.CreateRole(role)
@@ -131,17 +115,17 @@ func resourceSumologicRoleCreate(d *schema.ResourceData, meta interface{}) error
 	return resourceSumologicRoleRead(d, meta)
 }
 func resourceToRole(d *schema.ResourceData) Role {
-   rawCapabilities := d.Get("capabilities").([]interface{})
-	capabilities := make([]string, len(rawCapabilities ))
-	for i, v := range rawCapabilities  {
+	rawCapabilities := d.Get("capabilities").([]interface{})
+	capabilities := make([]string, len(rawCapabilities))
+	for i, v := range rawCapabilities {
 		capabilities[i] = v.(string)
 	}
-   
-   return Role{
-    Name: d.Get("name").(string),
-    ID: d.Id(),
-    Description: d.Get("description").(string),
-    FilterPredicate: d.Get("filter_predicate").(string),
-    Capabilities: capabilities,
-   }
- }
+
+	return Role{
+		Name:            d.Get("name").(string),
+		ID:              d.Id(),
+		Description:     d.Get("description").(string),
+		FilterPredicate: d.Get("filter_predicate").(string),
+		Capabilities:    capabilities,
+	}
+}

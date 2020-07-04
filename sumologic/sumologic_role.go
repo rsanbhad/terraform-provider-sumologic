@@ -13,119 +13,91 @@
 package sumologic
 
 import (
-  "encoding/json"
-  "fmt"
+	"encoding/json"
+	"fmt"
 )
 
-// ---------- ENDPOINTS ---------- 
-
+// ---------- ENDPOINTS ----------
 
 func (s *Client) GetRole(id string) (*Role, error) {
-    urlWithoutParams := "v1/roles/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, id)
+	urlWithoutParams := "v1/roles/%s"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, id)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
-
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-  data, _, err := s.Get(urlWithParams)
-  if err != nil {
+	data, _, err := s.Get(urlWithParams)
+	if err != nil {
 		return nil, err
 	}
 	if data == nil {
 		return nil, nil
 	}
 
-    var role Role
+	var role Role
 
-    
-    err = json.Unmarshal(data, &role)
+	err = json.Unmarshal(data, &role)
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    return &role, nil
+	return &role, nil
 }
-
 
 func (s *Client) DeleteRole(id string) error {
-    urlWithoutParams := "v1/roles/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, id)
+	urlWithoutParams := "v1/roles/%s"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, id)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
+	_, err := s.Delete(urlWithParams)
 
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    _, err := s.Delete(urlWithParams)
-    
-    return err
+	return err
 }
-
 
 func (s *Client) UpdateRole(role Role) error {
-    urlWithoutParams := "v1/roles/%s"
-    paramString := ""
-sprintfArgs := []interface{}{}
-sprintfArgs = append(sprintfArgs, role.ID)
+	urlWithoutParams := "v1/roles/%s"
+	paramString := ""
+	sprintfArgs := []interface{}{}
+	sprintfArgs = append(sprintfArgs, role.ID)
 
+	urlWithParams := fmt.Sprintf(urlWithoutParams+paramString, sprintfArgs...)
 
+	role.ID = ""
 
-
-
-    urlWithParams := fmt.Sprintf(urlWithoutParams + paramString, sprintfArgs...)
-    
-    
-    
-    
-    role.ID = ""
-    
-
-    _, err := s.Put(urlWithParams, role)
-    return err
+	_, err := s.Put(urlWithParams, role)
+	return err
 }
 
-
 func (s *Client) CreateRole(role Role) (string, error) {
-    urlWithoutParams := "v1/roles"
-    
-    
-    
-    
-  data, err := s.Post(urlWithoutParams, role)
-  if err != nil {
+	urlWithoutParams := "v1/roles"
+
+	data, err := s.Post(urlWithoutParams, role)
+	if err != nil {
 		return "", err
 	}
 
-    var createdRole Role
+	var createdRole Role
 
-    
-    err = json.Unmarshal(data, &createdRole)
-    if err != nil {
-        return "", err
-    }
+	err = json.Unmarshal(data, &createdRole)
+	if err != nil {
+		return "", err
+	}
 
-    return createdRole.ID, nil
+	return createdRole.ID, nil
 }
-
 
 // ---------- TYPES ----------
 type Role struct {
-    ID string `json:"id,omitempty"`
-    FilterPredicate string `json:"filterPredicate"`
-    Capabilities []string `json:"capabilities,omitempty"`
-    Name string `json:"name"`
-    Description string `json:"description"`
+	ID              string   `json:"id,omitempty"`
+	FilterPredicate string   `json:"filterPredicate"`
+	Capabilities    []string `json:"capabilities,omitempty"`
+	Name            string   `json:"name"`
+	Description     string   `json:"description"`
 }
-
 
 // ---------- END ----------

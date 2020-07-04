@@ -12,68 +12,54 @@
 package sumologic
 
 import (
-  "log"
-  "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-  
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"log"
 )
 
 func resourceSumologicScheduledView() *schema.Resource {
-    return &schema.Resource{
-      Create: resourceSumologicScheduledViewCreate,
-      Read: resourceSumologicScheduledViewRead,
-      Update: resourceSumologicScheduledViewUpdate,
-      Delete: resourceSumologicScheduledViewDelete,
-      Importer: &schema.ResourceImporter{
-        State: schema.ImportStatePassthrough,
-      },
+	return &schema.Resource{
+		Create: resourceSumologicScheduledViewCreate,
+		Read:   resourceSumologicScheduledViewRead,
+		Update: resourceSumologicScheduledViewUpdate,
+		Delete: resourceSumologicScheduledViewDelete,
+		Importer: &schema.ResourceImporter{
+			State: schema.ImportStatePassthrough,
+		},
 
-       Schema: map[string]*schema.Schema{
-        "index_name": {
-           Type: schema.TypeString,
-          Required: true,
-           ForceNew: false,
-           
-           
-         },
-         "start_time": {
-           Type: schema.TypeString,
-          Required: true,
-           ForceNew: false,
-           
-           
-         },
-         "retention_period": {
-           Type: schema.TypeInt,
-          Optional: true,
-           ForceNew: false,
-Default: -1,
-           
-           
-         },
-         "parsing_mode": {
-           Type: schema.TypeString,
-          Optional: true,
-           ForceNew: false,
-Default: "Manual",
-           
-           
-         },
-         "query": {
-           Type: schema.TypeString,
-          Required: true,
-           ForceNew: false,
-           
-           
-         },
-        
-    },
-  }
+		Schema: map[string]*schema.Schema{
+			"index_name": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: false,
+			},
+			"start_time": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: false,
+			},
+			"retention_period": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				ForceNew: false,
+				Default:  -1,
+			},
+			"parsing_mode": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+				Default:  "Manual",
+			},
+			"query": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: false,
+			},
+		},
+	}
 }
 
 func resourceSumologicScheduledViewRead(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
-
-  
 
 	id := d.Id()
 	scheduledView, err := c.GetScheduledView(id)
@@ -89,18 +75,16 @@ func resourceSumologicScheduledViewRead(d *schema.ResourceData, meta interface{}
 	}
 
 	d.Set("parsing_mode", scheduledView.ParsingMode)
-    d.Set("query", scheduledView.Query)
-    d.Set("retention_period", scheduledView.RetentionPeriod)
-    d.Set("index_name", scheduledView.IndexName)
-    d.Set("start_time", scheduledView.StartTime)
+	d.Set("query", scheduledView.Query)
+	d.Set("retention_period", scheduledView.RetentionPeriod)
+	d.Set("index_name", scheduledView.IndexName)
+	d.Set("start_time", scheduledView.StartTime)
 
 	return nil
 }
 
 func resourceSumologicScheduledViewUpdate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
-
-  
 
 	scheduledView := resourceToScheduledView(d)
 
@@ -116,8 +100,6 @@ func resourceSumologicScheduledViewUpdate(d *schema.ResourceData, meta interface
 func resourceSumologicScheduledViewCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
-  
-
 	if d.Id() == "" {
 		scheduledView := resourceToScheduledView(d)
 		id, err := c.CreateScheduledView(scheduledView)
@@ -132,21 +114,18 @@ func resourceSumologicScheduledViewCreate(d *schema.ResourceData, meta interface
 	return resourceSumologicScheduledViewRead(d, meta)
 }
 func resourceSumologicScheduledViewDelete(d *schema.ResourceData, meta interface{}) error {
-  c := meta.(*Client)
+	c := meta.(*Client)
 
-  
-
-  return c.DeleteScheduledView(d.Id())
+	return c.DeleteScheduledView(d.Id())
 }
 func resourceToScheduledView(d *schema.ResourceData) ScheduledView {
-   
-   
-   return ScheduledView{
-    IndexName: d.Get("index_name").(string),
-    ParsingMode: d.Get("parsing_mode").(string),
-    ID: d.Id(),
-    RetentionPeriod: d.Get("retention_period").(int),
-    StartTime: d.Get("start_time").(string),
-    Query: d.Get("query").(string),
-   }
- }
+
+	return ScheduledView{
+		IndexName:       d.Get("index_name").(string),
+		ParsingMode:     d.Get("parsing_mode").(string),
+		ID:              d.Id(),
+		RetentionPeriod: d.Get("retention_period").(int),
+		StartTime:       d.Get("start_time").(string),
+		Query:           d.Get("query").(string),
+	}
+}

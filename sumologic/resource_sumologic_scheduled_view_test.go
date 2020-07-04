@@ -13,19 +13,20 @@ package sumologic
 
 import (
 	"fmt"
-	"testing"
-  "strconv"
-  "strings"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"strconv"
+	"strings"
+	"testing"
 )
+
 func TestAccSumologicScheduledView_basic(t *testing.T) {
 	var scheduledView ScheduledView
 	testParsingMode := "Manual"
-  testQuery := "_sourcecategory=*/Apache"
-  testRetentionPeriod := 365
-  testIndexName := "TestScheduledView"
-  testStartTime := "2020-07-04T22:35:41Z"
+	testQuery := "_sourcecategory=*/Apache"
+	testRetentionPeriod := 365
+	testIndexName := "TestScheduledView"
+	testStartTime := "2020-07-04T22:35:41Z"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -44,46 +45,46 @@ func TestAccSumologicScheduledView_basic(t *testing.T) {
 	})
 }
 func TestAccScheduledView_create(t *testing.T) {
-  var scheduledView ScheduledView
-  testParsingMode := "Manual"
-  testQuery := "_sourcecategory=*/Apache"
-  testRetentionPeriod := 365
-  testIndexName := "TestScheduledView"
-  testStartTime := "2020-07-04T22:35:41Z"
-  resource.Test(t, resource.TestCase{
-    PreCheck: func() { testAccPreCheck(t) },
-    Providers:    testAccProviders,
-    CheckDestroy: testAccCheckScheduledViewDestroy(scheduledView),
-    Steps: []resource.TestStep{
-      {
-        Config: testAccSumologicScheduledView(testParsingMode, testQuery, testRetentionPeriod, testIndexName, testStartTime),
-        Check: resource.ComposeTestCheckFunc(
-          testAccCheckScheduledViewExists("sumologic_scheduled_view.test", &scheduledView, t),
-          testAccCheckScheduledViewAttributes("sumologic_scheduled_view.test"),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "parsing_mode", testParsingMode),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "query", testQuery),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "index_name", testIndexName),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "start_time", testStartTime),
-        ),
-      },
-    },
-  })
+	var scheduledView ScheduledView
+	testParsingMode := "Manual"
+	testQuery := "_sourcecategory=*/Apache"
+	testRetentionPeriod := 365
+	testIndexName := "TestScheduledView"
+	testStartTime := "2020-07-04T22:35:41Z"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckScheduledViewDestroy(scheduledView),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccSumologicScheduledView(testParsingMode, testQuery, testRetentionPeriod, testIndexName, testStartTime),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckScheduledViewExists("sumologic_scheduled_view.test", &scheduledView, t),
+					testAccCheckScheduledViewAttributes("sumologic_scheduled_view.test"),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "parsing_mode", testParsingMode),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "query", testQuery),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "index_name", testIndexName),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "start_time", testStartTime),
+				),
+			},
+		},
+	})
 }
 
 func testAccCheckScheduledViewDestroy(scheduledView ScheduledView) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		client := testAccProvider.Meta().(*Client)
-    for _, r := range s.RootModule().Resources {
-      id := r.Primary.ID
-		  u, err := client.GetScheduledView(id)
-		  if err != nil {
-        return fmt.Errorf("Encountered an error: " + err.Error())
-		  }
-      if u != nil {
-        return fmt.Errorf("ScheduledView still exists")
-      }
-    }
+		for _, r := range s.RootModule().Resources {
+			id := r.Primary.ID
+			u, err := client.GetScheduledView(id)
+			if err != nil {
+				return fmt.Errorf("Encountered an error: " + err.Error())
+			}
+			if u != nil {
+				return fmt.Errorf("ScheduledView still exists")
+			}
+		}
 		return nil
 	}
 }
@@ -91,11 +92,11 @@ func testAccCheckScheduledViewExists(name string, scheduledView *ScheduledView, 
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 		if !ok {
-      //need this so that we don't get an unused import error for strconv in some cases
+			//need this so that we don't get an unused import error for strconv in some cases
 			return fmt.Errorf("Error = %s. ScheduledView not found: %s", strconv.FormatBool(ok), name)
 		}
 
-    //need this so that we don't get an unused import error for strings in some cases
+		//need this so that we don't get an unused import error for strings in some cases
 		if strings.EqualFold(rs.Primary.ID, "") {
 			return fmt.Errorf("ScheduledView ID is not set")
 		}
@@ -112,21 +113,21 @@ func testAccCheckScheduledViewExists(name string, scheduledView *ScheduledView, 
 }
 
 func TestAccScheduledView_update(t *testing.T) {
-  var scheduledView ScheduledView
-  testParsingMode := "Manual"
-  testQuery := "_sourcecategory=*/Apache"
-  testRetentionPeriod := 365
-  testIndexName := "TestScheduledView"
-  testStartTime := "2020-07-04T22:35:41Z"
+	var scheduledView ScheduledView
+	testParsingMode := "Manual"
+	testQuery := "_sourcecategory=*/Apache"
+	testRetentionPeriod := 365
+	testIndexName := "TestScheduledView"
+	testStartTime := "2020-07-04T22:35:41Z"
 
-  testUpdatedParsingMode := "Manual"
-  testUpdatedQuery := "_sourcecategory=*/Apache"
-  testUpdatedRetentionPeriod := 366
-  testUpdatedIndexName := "TestScheduledView"
-  testUpdatedStartTime := "2020-07-04T22:35:41Z"
+	testUpdatedParsingMode := "Manual"
+	testUpdatedQuery := "_sourcecategory=*/Apache"
+	testUpdatedRetentionPeriod := 366
+	testUpdatedIndexName := "TestScheduledView"
+	testUpdatedStartTime := "2020-07-04T22:35:41Z"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck: func() { testAccPreCheck(t) },
+		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckScheduledViewDestroy(scheduledView),
 		Steps: []resource.TestStep{
@@ -135,21 +136,21 @@ func TestAccScheduledView_update(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckScheduledViewExists("sumologic_scheduled_view.test", &scheduledView, t),
 					testAccCheckScheduledViewAttributes("sumologic_scheduled_view.test"),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "parsing_mode", testParsingMode),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "query", testQuery),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "index_name", testIndexName),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "start_time", testStartTime),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "parsing_mode", testParsingMode),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "query", testQuery),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "retention_period", strconv.Itoa(testRetentionPeriod)),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "index_name", testIndexName),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "start_time", testStartTime),
 				),
 			},
 			{
 				Config: testAccSumologicScheduledViewUpdate(testUpdatedParsingMode, testUpdatedQuery, testUpdatedRetentionPeriod, testUpdatedIndexName, testUpdatedStartTime),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "parsing_mode", testUpdatedParsingMode),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "query", testUpdatedQuery),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "retention_period", strconv.Itoa(testUpdatedRetentionPeriod)),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "index_name", testUpdatedIndexName),
-          resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "start_time", testUpdatedStartTime),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "query", testUpdatedQuery),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "retention_period", strconv.Itoa(testUpdatedRetentionPeriod)),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "index_name", testUpdatedIndexName),
+					resource.TestCheckResourceAttr("sumologic_scheduled_view.test", "start_time", testUpdatedStartTime),
 				),
 			},
 		},
@@ -192,14 +193,14 @@ resource "sumologic_scheduled_view" "test" {
 }
 
 func testAccCheckScheduledViewAttributes(name string) resource.TestCheckFunc {
-  return func(s *terraform.State) error {
-      f := resource.ComposeTestCheckFunc(
-        resource.TestCheckResourceAttrSet(name, "parsing_mode"),
-        resource.TestCheckResourceAttrSet(name, "query"),
-        resource.TestCheckResourceAttrSet(name, "retention_period"),
-        resource.TestCheckResourceAttrSet(name, "index_name"),
-        resource.TestCheckResourceAttrSet(name, "start_time"),
-      )
-      return f(s)
-   }
+	return func(s *terraform.State) error {
+		f := resource.ComposeTestCheckFunc(
+			resource.TestCheckResourceAttrSet(name, "parsing_mode"),
+			resource.TestCheckResourceAttrSet(name, "query"),
+			resource.TestCheckResourceAttrSet(name, "retention_period"),
+			resource.TestCheckResourceAttrSet(name, "index_name"),
+			resource.TestCheckResourceAttrSet(name, "start_time"),
+		)
+		return f(s)
+	}
 }
