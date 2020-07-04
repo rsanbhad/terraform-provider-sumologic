@@ -8,85 +8,40 @@
 //     changes will be clobbered when the file is regenerated. Do not submit
 //     changes to this file.
 //
-// ----------------------------------------------------------------------------\
+// ----------------------------------------------------------------------------
 package sumologic
 
 import (
-	"log"
-
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+  "log"
+  "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+  
 )
 
-func resourceSumologicFieldExtractionRule() *schema.Resource {
-	return &schema.Resource{
-		Create: resourceSumologicFieldExtractionRuleCreate,
-		Read:   resourceSumologicFieldExtractionRuleRead,
-		Update: resourceSumologicFieldExtractionRuleUpdate,
-		Delete: resourceSumologicFieldExtractionRuleDelete,
-		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
-		},
+func resourceSumologicExtractionRule() *schema.Resource {
+    return &schema.Resource{
+      Create: resourceSumologicExtractionRuleCreate,
+      Read: resourceSumologicExtractionRuleRead,
+      Update: resourceSumologicExtractionRuleUpdate,
+      Delete: resourceSumologicExtractionRuleDelete,
+      Importer: &schema.ResourceImporter{
+        State: schema.ImportStatePassthrough,
+      },
 
-		Schema: map[string]*schema.Schema{
-			"name": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: false,
-			},
-			"scope": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: false,
-			},
-			"parse_expression": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: false,
-			},
-			"enabled": {
-				Type:     schema.TypeBool,
-				Required: true,
-				ForceNew: false,
-			},
-		},
-	}
+       Schema: map[string]*schema.Schema{
+        ,
+        
+    },
+  }
 }
 
-func resourceSumologicFieldExtractionRuleRead(d *schema.ResourceData, meta interface{}) error {
+func resourceSumologicExtractionRuleCreate(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
-	id := d.Id()
-	fieldextractionrule, err := c.GetFieldExtractionRule(id)
-
-	if err != nil {
-		return err
-	}
-
-	if fieldextractionrule == nil {
-		log.Printf("[WARN] FieldExtractionRule not found, removing from state: %v - %v", id, err)
-		d.SetId("")
-		return nil
-	}
-
-	d.Set("name", fieldextractionrule.Name)
-	d.Set("scope", fieldextractionrule.Scope)
-	d.Set("parse_expression", fieldextractionrule.ParseExpression)
-	d.Set("enabled", fieldextractionrule.Enabled)
-
-	return nil
-}
-
-func resourceSumologicFieldExtractionRuleDelete(d *schema.ResourceData, meta interface{}) error {
-	c := meta.(*Client)
-	return c.DeleteFieldExtractionRule(d.Id())
-}
-
-func resourceSumologicFieldExtractionRuleCreate(d *schema.ResourceData, meta interface{}) error {
-	c := meta.(*Client)
+  
 
 	if d.Id() == "" {
-		fieldextractionrule := resourceToFieldExtractionRule(d)
-		id, err := c.CreateFieldExtractionRule(fieldextractionrule)
+		extractionRule := resourceToExtractionRule(d)
+		id, err := c.CreateExtractionRule(extractionRule)
 
 		if err != nil {
 			return err
@@ -95,30 +50,58 @@ func resourceSumologicFieldExtractionRuleCreate(d *schema.ResourceData, meta int
 		d.SetId(id)
 	}
 
-	return resourceSumologicFieldExtractionRuleRead(d, meta)
+	return resourceSumologicExtractionRuleRead(d, meta)
 }
 
-func resourceSumologicFieldExtractionRuleUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceSumologicExtractionRuleRead(d *schema.ResourceData, meta interface{}) error {
 	c := meta.(*Client)
 
-	fieldextractionrule := resourceToFieldExtractionRule(d)
+  
 
-	err := c.UpdateFieldExtractionRule(fieldextractionrule)
+	id := d.Id()
+	extractionRule, err := c.GetExtractionRule(id)
 
 	if err != nil {
 		return err
 	}
 
-	return resourceSumologicFieldExtractionRuleRead(d, meta)
-}
-
-func resourceToFieldExtractionRule(d *schema.ResourceData) FieldExtractionRule {
-
-	return FieldExtractionRule{
-		ID:              d.Id(),
-		Name:            d.Get("name").(string),
-		Scope:           d.Get("scope").(string),
-		ParseExpression: d.Get("parse_expression").(string),
-		Enabled:         d.Get("enabled").(bool),
+	if extractionRule == nil {
+		log.Printf("[WARN] ExtractionRule not found, removing from state: %v - %v", id, err)
+		d.SetId("")
+		return nil
 	}
+
+	
+
+	return nil
 }
+func resourceSumologicExtractionRuleDelete(d *schema.ResourceData, meta interface{}) error {
+  c := meta.(*Client)
+
+  
+
+  return c.DeleteExtractionRule(d.Id())
+}
+
+func resourceSumologicExtractionRuleUpdate(d *schema.ResourceData, meta interface{}) error {
+	c := meta.(*Client)
+
+  
+
+	extractionRule := resourceToExtractionRule(d)
+
+	err := c.UpdateExtractionRule(extractionRule)
+
+	if err != nil {
+		return err
+	}
+
+	return resourceSumologicExtractionRuleRead(d, meta)
+}
+func resourceToExtractionRule(d *schema.ResourceData) ExtractionRule {
+   
+   
+   return ExtractionRule{
+    ID: d.Id(),
+   }
+ }

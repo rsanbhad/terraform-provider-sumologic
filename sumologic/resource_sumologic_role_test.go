@@ -8,26 +8,23 @@
 //     changes will be clobbered when the file is regenerated. Do not submit
 //     changes to this file.
 //
-// ----------------------------------------------------------------------------\
+// ----------------------------------------------------------------------------
 package sumologic
 
 import (
 	"fmt"
-	"strconv"
-	"strings"
 	"testing"
-
+  "strconv"
+  "strings"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	"github.com/hashicorp/terraform/helper/acctest"
 )
-
 func TestAccSumologicRole_basic(t *testing.T) {
 	var role Role
-	testName := acctest.RandomWithPrefix("tf-acc-test")
-	testDescription := FieldsMap["Role"]["description"]
-	testFilterPredicate := FieldsMap["Role"]["filterPredicate"]
-	testCapabilities := []string{"\"" + FieldsMap["Role"]["capabilities"] + "\""}
+	testName := "DataAdmin"
+  testDescription := "Manage data of the org."
+  testCapabilities := []string{"\"manageContent\""}
+  testFilterPredicate := "!_sourceCategory=billing"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -35,7 +32,7 @@ func TestAccSumologicRole_basic(t *testing.T) {
 		CheckDestroy: testAccCheckRoleDestroy(role),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckSumologicRoleConfigImported(testName, testDescription, testFilterPredicate, testCapabilities),
+				Config: testAccCheckSumologicRoleConfigImported(testName, testDescription, testCapabilities, testFilterPredicate),
 			},
 			{
 				ResourceName:      "sumologic_role.foo",
@@ -45,59 +42,57 @@ func TestAccSumologicRole_basic(t *testing.T) {
 		},
 	})
 }
-
 func TestAccRole_create(t *testing.T) {
-	var role Role
-	testName := acctest.RandomWithPrefix("tf-acc-test")
-	testDescription := FieldsMap["Role"]["description"]
-	testFilterPredicate := FieldsMap["Role"]["filterPredicate"]
-	testCapabilities := []string{"\"" + FieldsMap["Role"]["capabilities"] + "\""}
-	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckRoleDestroy(role),
-		Steps: []resource.TestStep{
-			{
-				Config: testAccSumologicRole(testName, testDescription, testFilterPredicate, testCapabilities),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckRoleExists("sumologic_role.test", &role, t),
-					testAccCheckRoleAttributes("sumologic_role.test"),
-					resource.TestCheckResourceAttr("sumologic_role.test", "name", testName),
-					resource.TestCheckResourceAttr("sumologic_role.test", "description", testDescription),
-					resource.TestCheckResourceAttr("sumologic_role.test", "filter_predicate", testFilterPredicate),
-					resource.TestCheckResourceAttr("sumologic_role.test", "capabilities.0", strings.Replace(testCapabilities[0], "\"", "", 2)),
-				),
-			},
-		},
-	})
+  var role Role
+  testName := "DataAdmin"
+  testDescription := "Manage data of the org."
+  testCapabilities := []string{"\"manageContent\""}
+  testFilterPredicate := "!_sourceCategory=billing"
+  resource.Test(t, resource.TestCase{
+    PreCheck: func() { testAccPreCheck(t) },
+    Providers:    testAccProviders,
+    CheckDestroy: testAccCheckRoleDestroy(role),
+    Steps: []resource.TestStep{
+      {
+        Config: testAccSumologicRole(testName, testDescription, testCapabilities, testFilterPredicate),
+        Check: resource.ComposeTestCheckFunc(
+          testAccCheckRoleExists("sumologic_role.test", &role, t),
+          testAccCheckRoleAttributes("sumologic_role.test"),
+          resource.TestCheckResourceAttr("sumologic_role.test", "name", testName),
+          resource.TestCheckResourceAttr("sumologic_role.test", "description", testDescription),
+          resource.TestCheckResourceAttr("sumologic_role.test", "capabilities.0", strings.Replace(testCapabilities[0], "\"", "", 2)),
+          resource.TestCheckResourceAttr("sumologic_role.test", "filter_predicate", testFilterPredicate),
+        ),
+      },
+    },
+  })
 }
 
 func testAccCheckRoleDestroy(role Role) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		client := testAccProvider.Meta().(*Client)
-		for _, r := range s.RootModule().Resources {
-			id := r.Primary.ID
-			u, err := client.GetRole(id)
-			if err != nil {
-				return fmt.Errorf("Encountered an error: " + err.Error())
-			}
-			if u != nil {
-				return fmt.Errorf("Role still exists")
-			}
-		}
+    for _, r := range s.RootModule().Resources {
+      id := r.Primary.ID
+		  u, err := client.GetRole(id)
+		  if err != nil {
+        return fmt.Errorf("Encountered an error: " + err.Error())
+		  }
+      if u != nil {
+        return fmt.Errorf("Role still exists")
+      }
+    }
 		return nil
 	}
 }
-
 func testAccCheckRoleExists(name string, role *Role, t *testing.T) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[name]
 		if !ok {
-			//need this so that we don't get an unused import error for strconv in some cases
+      //need this so that we don't get an unused import error for strconv in some cases
 			return fmt.Errorf("Error = %s. Role not found: %s", strconv.FormatBool(ok), name)
 		}
 
-		//need this so that we don't get an unused import error for strings in some cases
+    //need this so that we don't get an unused import error for strings in some cases
 		if strings.EqualFold(rs.Primary.ID, "") {
 			return fmt.Errorf("Role ID is not set")
 		}
@@ -114,88 +109,85 @@ func testAccCheckRoleExists(name string, role *Role, t *testing.T) resource.Test
 }
 
 func TestAccRole_update(t *testing.T) {
-	var role Role
-	testName := acctest.RandomWithPrefix("tf-acc-test")
-	testDescription := FieldsMap["Role"]["description"]
-	testFilterPredicate := FieldsMap["Role"]["filterPredicate"]
-	testCapabilities := []string{"\"" + FieldsMap["Role"]["capabilities"] + "\""}
+  var role Role
+  testName := "DataAdmin"
+  testDescription := "Manage data of the org."
+  testCapabilities := []string{"\"manageContent\""}
+  testFilterPredicate := "!_sourceCategory=billing"
 
-	testUpdatedName := acctest.RandomWithPrefix("tf-acc-test")
-	testUpdatedDescription := FieldsMap["Role"]["updatedDescription"]
-	testUpdatedFilterPredicate := FieldsMap["Role"]["updatedFilterPredicate"]
-	testUpdatedCapabilities := []string{"\"" + FieldsMap["Role"]["updatedCapabilities"] + "\""}
+  testUpdatedName := "DataAdminUpdate"
+  testUpdatedDescription := "Manage data of the org.Update"
+  testUpdatedCapabilities := []string{"\"manageContent\""}
+  testUpdatedFilterPredicate := "!_sourceCategory=billingUpdate"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck: func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckRoleDestroy(role),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccSumologicRole(testName, testDescription, testFilterPredicate, testCapabilities),
+				Config: testAccSumologicRole(testName, testDescription, testCapabilities, testFilterPredicate),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckRoleExists("sumologic_role.test", &role, t),
 					testAccCheckRoleAttributes("sumologic_role.test"),
-					resource.TestCheckResourceAttr("sumologic_role.test", "name", testName),
-					resource.TestCheckResourceAttr("sumologic_role.test", "description", testDescription),
-					resource.TestCheckResourceAttr("sumologic_role.test", "filter_predicate", testFilterPredicate),
-					resource.TestCheckResourceAttr("sumologic_role.test", "capabilities.0", strings.Replace(testCapabilities[0], "\"", "", 2)),
+          resource.TestCheckResourceAttr("sumologic_role.test", "name", testName),
+          resource.TestCheckResourceAttr("sumologic_role.test", "description", testDescription),
+          resource.TestCheckResourceAttr("sumologic_role.test", "capabilities.0", strings.Replace(testCapabilities[0], "\"", "", 2)),
+          resource.TestCheckResourceAttr("sumologic_role.test", "filter_predicate", testFilterPredicate),
 				),
 			},
 			{
-				Config: testAccSumologicRoleUpdate(testUpdatedName, testUpdatedDescription, testUpdatedFilterPredicate, testUpdatedCapabilities),
+				Config: testAccSumologicRoleUpdate(testUpdatedName, testUpdatedDescription, testUpdatedCapabilities, testUpdatedFilterPredicate),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckRoleExists("sumologic_role.test", &role, t),
-					testAccCheckRoleAttributes("sumologic_role.test"),
 					resource.TestCheckResourceAttr("sumologic_role.test", "name", testUpdatedName),
-					resource.TestCheckResourceAttr("sumologic_role.test", "description", testUpdatedDescription),
-					resource.TestCheckResourceAttr("sumologic_role.test", "filter_predicate", testUpdatedFilterPredicate),
-					resource.TestCheckResourceAttr("sumologic_role.test", "capabilities.0", strings.Replace(testUpdatedCapabilities[0], "\"", "", 2)),
+          resource.TestCheckResourceAttr("sumologic_role.test", "description", testUpdatedDescription),
+          resource.TestCheckResourceAttr("sumologic_role.test", "capabilities.0", strings.Replace(testUpdatedCapabilities[0], "\"", "", 2)),
+          resource.TestCheckResourceAttr("sumologic_role.test", "filter_predicate", testUpdatedFilterPredicate),
 				),
 			},
 		},
 	})
 }
-
-func testAccCheckSumologicRoleConfigImported(name string, description string, filterPredicate string, capabilities []string) string {
+func testAccCheckSumologicRoleConfigImported(name string, description string, capabilities []string, filterPredicate string) string {
 	return fmt.Sprintf(`
 resource "sumologic_role" "foo" {
       name = "%s"
       description = "%s"
-      filter_predicate = "%s"
       capabilities = %v
+      filter_predicate = "%s"
 }
-`, name, description, filterPredicate, capabilities)
+`, name, description, capabilities, filterPredicate)
 }
 
-func testAccSumologicRole(name string, description string, filterPredicate string, capabilities []string) string {
+func testAccSumologicRole(name string, description string, capabilities []string, filterPredicate string) string {
 	return fmt.Sprintf(`
 resource "sumologic_role" "test" {
     name = "%s"
     description = "%s"
-    filter_predicate = "%s"
     capabilities = %v
+    filter_predicate = "%s"
 }
-`, name, description, filterPredicate, capabilities)
+`, name, description, capabilities, filterPredicate)
 }
 
-func testAccSumologicRoleUpdate(name string, description string, filterPredicate string, capabilities []string) string {
+func testAccSumologicRoleUpdate(name string, description string, capabilities []string, filterPredicate string) string {
 	return fmt.Sprintf(`
 resource "sumologic_role" "test" {
       name = "%s"
       description = "%s"
-      filter_predicate = "%s"
       capabilities = %v
+      filter_predicate = "%s"
 }
-`, name, description, filterPredicate, capabilities)
+`, name, description, capabilities, filterPredicate)
 }
 
 func testAccCheckRoleAttributes(name string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		f := resource.ComposeTestCheckFunc(
-			resource.TestCheckResourceAttrSet(name, "name"),
-			resource.TestCheckResourceAttrSet(name, "description"),
-			resource.TestCheckResourceAttrSet(name, "filter_predicate"),
-		)
-		return f(s)
-	}
+  return func(s *terraform.State) error {
+      f := resource.ComposeTestCheckFunc(
+        resource.TestCheckResourceAttrSet(name, "name"),
+        resource.TestCheckResourceAttrSet(name, "description"),
+        resource.TestCheckResourceAttrSet(name, "filter_predicate"),
+      )
+      return f(s)
+   }
 }

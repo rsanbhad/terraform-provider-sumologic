@@ -37,23 +37,36 @@ func Provider() terraform.ResourceProvider {
 				Default:  os.Getenv("SUMOLOGIC_BASE_URL"),
 			},
 		},
-		ResourcesMap: map[string]*schema.Resource{
+   
+   ResourcesMap: map[string]*schema.Resource{
 			"sumologic_collector":                          resourceSumologicCollector(),
 			"sumologic_http_source":                        resourceSumologicHTTPSource(),
 			"sumologic_polling_source":                     resourceSumologicPollingSource(),
 			"sumologic_cloudsyslog_source":                 resourceSumologicCloudsyslogSource(),
-			"sumologic_role":                               resourceSumologicRole(),
 			"sumologic_user":                               resourceSumologicUser(),
 			"sumologic_ingest_budget":                      resourceSumologicIngestBudget(),
 			"sumologic_collector_ingest_budget_assignment": resourceSumologicCollectorIngestBudgetAssignment(),
 			"sumologic_folder":                             resourceSumologicFolder(),
 			"sumologic_content":                            resourceSumologicContent(),
-			"sumologic_scheduled_view":                     resourceSumologicScheduledView(),
-			"sumologic_partition":                          resourceSumologicPartition(),
-			"sumologic_field_extraction_rule":              resourceSumologicFieldExtractionRule(),
-			"sumologic_connection":                         resourceSumologicConnection(),
+     "sumologic_connection":                         resourceSumologicConnection(),
+     
+"sumologic_scheduled_view":            resourceSumologicScheduledView(),
+
+     
+"sumologic_monitors_library_monitor":            resourceSumologicMonitorsLibraryMonitor(),
+
+     
+"sumologic_role":            resourceSumologicRole(),
+
+     
+"sumologic_partition":            resourceSumologicPartition(),
+
+     
+"sumologic_extraction_rule":            resourceSumologicExtractionRule(),
+
 		},
-		DataSourcesMap: map[string]*schema.Resource{
+   
+   DataSourcesMap: map[string]*schema.Resource{
 			"sumologic_caller_identity": dataSourceSumologicCallerIdentity(),
 			"sumologic_collector":       dataSourceSumologicCollector(),
 			"sumologic_http_source":     dataSourceSumologicHTTPSource(),
@@ -81,9 +94,7 @@ func resolveRedirectURL(accessId string, accessKey string) (string, error) {
 	}
 	location := resp.Header.Get("location")
 	if location == "" {
-		// location header not found implies there was no redirect needed
-		// i.e, the desired environment is us1
-		return "https://api.sumologic.com/api/", nil
+		return location, fmt.Errorf("location header not found")
 	}
 	return strings.Split(location, "v1")[0], nil
 }
